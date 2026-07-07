@@ -13,31 +13,67 @@
         
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background: radial-gradient(circle at top left, #0f1123, #090d16, #020408);
             background-attachment: fixed;
+            transition: background 0.5s ease, color 0.3s ease;
         }
 
+        /* --- Theme Variables & Transitions --- */
+        body.theme-dark {
+            background: radial-gradient(circle at top left, #0f1123, #090d16, #020408);
+            color: #f1f5f9;
+        }
+        body.theme-light {
+            background: radial-gradient(circle at top left, #f8fafc, #f1f5f9, #e2e8f0);
+            color: #0f172a;
+        }
+
+        /* Glassmorphism Dynamic Structural Panels */
         .glass-panel {
-            background: rgba(255, 255, 255, 0.02);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
+            transition: background 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+        }
+        .theme-dark .glass-panel {
+            background: rgba(255, 255, 255, 0.02);
             border: 1px solid rgba(255, 255, 255, 0.07);
             box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.5);
         }
-
-        .glass-card {
-            background: rgba(255, 255, 255, 0.01);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        .theme-light .glass-panel {
+            background: rgba(255, 255, 255, 0.45);
+            border: 1px solid rgba(15, 23, 42, 0.06);
+            box-shadow: 0 12px 40px 0 rgba(15, 23, 42, 0.05);
         }
 
-        .glass-card:hover {
+        /* Glassmorphism Dynamic Cards */
+        .glass-card {
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .theme-dark .glass-card {
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+        .theme-dark .glass-card:hover {
             background: rgba(255, 255, 255, 0.04);
             border-color: rgba(255, 255, 255, 0.1);
             transform: translateY(-1px);
         }
+        .theme-light .glass-card {
+            background: rgba(15, 23, 42, 0.02);
+            border: 1px solid rgba(15, 23, 42, 0.04);
+        }
+        .theme-light .glass-card:hover {
+            background: rgba(15, 23, 42, 0.04);
+            border-color: rgba(15, 23, 42, 0.08);
+            transform: translateY(-1px);
+        }
+
+        /* Labels and Text Theme Overrides */
+        .theme-dark .dynamic-subtext { color: #94a3b8; }
+        .theme-light .dynamic-subtext { color: #475569; }
+        .theme-dark .dynamic-title { color: #e2e8f0; }
+        .theme-light .dynamic-title { color: #1e293b; }
 
         .clickable-element { transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1); }
         .clickable-element:active { transform: scale(0.97); }
@@ -46,12 +82,12 @@
         ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.08); border-radius: 10px; }
     </style>
 </head>
-<body class="text-slate-100 min-h-screen p-4 md:p-8">
+<body class="theme-dark min-h-screen p-4 md:p-8">
 
     <!-- Cloud Sync Status Indicator Toast -->
-    <div id="syncIndicator" class="fixed bottom-6 right-6 glass-panel rounded-xl px-4 py-2 text-xs flex items-center gap-2 border border-slate-700/50 z-50">
+    <div id="syncIndicator" class="fixed bottom-6 right-6 glass-panel rounded-xl px-4 py-2 text-xs flex items-center gap-2 z-50">
         <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse" id="syncDot"></span>
-        <span id="syncText" class="text-slate-400">Sync Engine Initializing...</span>
+        <span id="syncText" class="dynamic-subtext font-medium">Sync Engine Initializing...</span>
     </div>
 
     <div class="max-w-7xl mx-auto space-y-6">
@@ -63,14 +99,19 @@
                     <i data-lucide="building-2" class="w-7 h-7"></i>
                 </div>
                 <div>
-                    <h1 class="text-2xl font-bold tracking-tight bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">Marketing Command Suite</h1>
-                    <p class="text-xs text-slate-400">Head: Ajith • Multi-Property Strategy Matrix</p>
+                    <h1 class="text-2xl font-bold tracking-tight bg-gradient-to-r from-indigo-500 to-indigo-400 lg:from-white lg:to-slate-400 bg-clip-text text-transparent theme-title-target">Marketing Command Suite</h1>
+                    <p class="text-xs dynamic-subtext">Head: Ajith • Multi-Property Strategy Matrix</p>
                 </div>
             </div>
             
             <div class="flex flex-wrap items-center gap-3 w-full lg:w-auto">
+                <!-- Theme Toggler Control Switcher -->
+                <button onclick="toggleTheme()" class="clickable-element glass-card p-3 rounded-xl flex items-center justify-center h-[46px] w-[46px] dynamic-title" title="Toggle UI Palette Theme">
+                    <i id="themeIcon" data-lucide="sun" class="w-4 h-4 text-amber-400"></i>
+                </button>
+
                 <div class="relative min-w-[220px] flex-1 lg:flex-initial">
-                    <select id="businessSelector" onchange="changeBusiness(this.value)" class="w-full appearance-none glass-card rounded-xl px-4 py-3 text-sm font-semibold text-indigo-300 outline-none cursor-pointer pr-10 border border-indigo-500/20 focus:border-indigo-500/60">
+                    <select id="businessSelector" onchange="changeBusiness(this.value)" class="w-full appearance-none glass-card rounded-xl px-4 py-3 text-sm font-semibold text-indigo-500 dark:text-indigo-300 outline-none cursor-pointer pr-10 focus:border-indigo-500/60">
                         <option value="all">📊 All Businesses Dashboard</option>
                         <option value="good_earth">🏡 Good Earth Homestay</option>
                         <option value="camp_alpha">⛺ Camp Alpha</option>
@@ -82,7 +123,7 @@
                 </div>
 
                 <div class="relative min-w-[160px] flex-1 lg:flex-initial">
-                    <select id="daySelector" onchange="changeDay(this.value)" class="w-full appearance-none glass-card rounded-xl px-4 py-3 text-sm font-medium text-slate-200 outline-none cursor-pointer pr-10 focus:border-slate-500/40">
+                    <select id="daySelector" onchange="changeDay(this.value)" class="w-full appearance-none glass-card rounded-xl px-4 py-3 text-sm font-medium dynamic-title outline-none cursor-pointer pr-10 focus:border-slate-500/40">
                         <option value="Monday">Monday</option><option value="Tuesday">Tuesday</option><option value="Wednesday">Wednesday</option><option value="Thursday">Thursday</option><option value="Friday">Friday</option><option value="Saturday">Saturday</option><option value="Sunday">Sunday (Holiday)</option>
                     </select>
                     <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
@@ -100,36 +141,36 @@
         <div id="globalKpiPanel" class="glass-panel rounded-3xl p-6 grid grid-cols-1 md:grid-cols-2 gap-6 bg-gradient-to-br from-slate-900/40 to-indigo-950/20">
             <div>
                 <div class="flex justify-between items-center mb-2">
-                    <div class="flex items-center gap-2 text-sm font-bold text-slate-300">
+                    <div class="flex items-center gap-2 text-sm font-bold dynamic-title">
                         <i data-lucide="users" class="w-4 h-4 text-sky-400"></i>
                         <span>Lead Generation (Qualified Targets)</span>
                     </div>
                     <span id="leadCounterTxt" class="text-xs font-mono font-bold text-sky-400">0/150 leads/mo</span>
                 </div>
-                <div class="flex items-center gap-3 bg-slate-950/60 p-3 rounded-xl border border-slate-800">
-                    <div class="w-full bg-slate-900 h-2 rounded-full overflow-hidden">
+                <div class="flex items-center gap-3 bg-slate-950/20 dark:bg-slate-950/60 p-3 rounded-xl border border-slate-700/20 dark:border-slate-800">
+                    <div class="w-full bg-slate-300 dark:bg-slate-900 h-2 rounded-full overflow-hidden">
                         <div id="leadBar" style="width: 0%" class="h-full bg-sky-500 transition-all duration-300"></div>
                     </div>
                     <div class="flex gap-1 shrink-0">
-                        <button onclick="adjustGlobalCounter('leads', -5, 150)" class="w-6 h-6 rounded bg-slate-800 text-xs flex items-center justify-center font-bold text-slate-400">-</button>
+                        <button onclick="adjustGlobalCounter('leads', -5, 150)" class="w-6 h-6 rounded bg-slate-300 dark:bg-slate-800 text-xs flex items-center justify-center font-bold text-slate-600 dark:text-slate-400">-</button>
                         <button onclick="adjustGlobalCounter('leads', 5, 150)" class="w-6 h-6 rounded bg-sky-600 text-xs flex items-center justify-center font-bold text-white">+</button>
                     </div>
                 </div>
             </div>
             <div>
                 <div class="flex justify-between items-center mb-2">
-                    <div class="flex items-center gap-2 text-sm font-bold text-slate-300">
+                    <div class="flex items-center gap-2 text-sm font-bold dynamic-title">
                         <i data-lucide="award" class="w-4 h-4 text-emerald-400"></i>
                         <span>Review & Reputation Management</span>
                     </div>
                     <span id="reviewCounterTxt" class="text-xs font-mono font-bold text-emerald-400">0/70 reviews</span>
                 </div>
-                <div class="flex items-center gap-3 bg-slate-950/60 p-3 rounded-xl border border-slate-800">
-                    <div class="w-full bg-slate-900 h-2 rounded-full overflow-hidden">
+                <div class="flex items-center gap-3 bg-slate-950/20 dark:bg-slate-950/60 p-3 rounded-xl border border-slate-700/20 dark:border-slate-800">
+                    <div class="w-full bg-slate-300 dark:bg-slate-900 h-2 rounded-full overflow-hidden">
                         <div id="reputationBar" style="width: 0%" class="h-full bg-emerald-500 transition-all duration-300"></div>
                     </div>
                     <div class="flex gap-1 shrink-0">
-                        <button onclick="adjustGlobalCounter('reviews', -1, 70)" class="w-6 h-6 rounded bg-slate-800 text-xs flex items-center justify-center font-bold text-slate-400">-</button>
+                        <button onclick="adjustGlobalCounter('reviews', -1, 70)" class="w-6 h-6 rounded bg-slate-300 dark:bg-slate-800 text-xs flex items-center justify-center font-bold text-slate-600 dark:text-slate-400">-</button>
                         <button onclick="adjustGlobalCounter('reviews', 1, 70)" class="w-6 h-6 rounded bg-emerald-600 text-xs flex items-center justify-center font-bold text-white">+</button>
                     </div>
                 </div>
@@ -139,15 +180,15 @@
         <!-- Master Analytics Cards -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div class="glass-panel rounded-2xl p-5 flex items-center justify-between border-b-2 border-b-indigo-500/30">
-                <div><p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Weekly Target Progress</p><h3 id="dayProgressTxt" class="text-3xl font-bold mt-1 text-indigo-400">0%</h3></div>
-                <div class="w-14 h-14 rounded-xl glass-card flex items-center justify-center text-indigo-400"><i data-lucide="target" class="w-6 h-6"></i></div>
+                <div><p class="text-xs font-semibold uppercase tracking-wider dynamic-subtext">Weekly Target Progress</p><h3 id="dayProgressTxt" class="text-3xl font-bold mt-1 text-indigo-500 dark:text-indigo-400">0%</h3></div>
+                <div class="w-14 h-14 rounded-xl glass-card flex items-center justify-center text-indigo-500 dark:text-indigo-400"><i data-lucide="target" class="w-6 h-6"></i></div>
             </div>
             <div class="glass-panel rounded-2xl p-5 flex items-center justify-between border-b-2 border-b-emerald-500/30">
-                <div><p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Operational Checklist Yield</p><h3 id="recurringProgressTxt" class="text-3xl font-bold mt-1 text-emerald-400">0%</h3></div>
+                <div><p class="text-xs font-semibold uppercase tracking-wider dynamic-subtext">Operational Checklist Yield</p><h3 id="recurringProgressTxt" class="text-3xl font-bold mt-1 text-emerald-500 dark:text-emerald-400">0%</h3></div>
                 <div class="w-14 h-14 rounded-xl glass-card flex items-center justify-center text-emerald-400"><i data-lucide="zap" class="w-6 h-6"></i></div>
             </div>
             <div class="glass-panel rounded-2xl p-5 flex items-center justify-between border-b-2 border-b-amber-500/30">
-                <div><p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Social & Scaling Impact</p><h3 id="weeklyProgressTxt" class="text-3xl font-bold mt-1 text-amber-400">0%</h3></div>
+                <div><p class="text-xs font-semibold uppercase tracking-wider dynamic-subtext">Social & Scaling Impact</p><h3 id="weeklyProgressTxt" class="text-3xl font-bold mt-1 text-amber-500 dark:text-amber-400">0%</h3></div>
                 <div class="w-14 h-14 rounded-xl glass-card flex items-center justify-center text-amber-400"><i data-lucide="gauge" class="w-6 h-6"></i></div>
             </div>
         </div>
@@ -155,7 +196,7 @@
         <!-- WhatsApp EOD Broadcaster Bar -->
         <div class="glass-panel rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 bg-gradient-to-r from-emerald-500/5 to-indigo-500/5 border border-emerald-500/20">
             <div class="flex items-center gap-3"><div class="p-2 bg-emerald-500/10 rounded-xl text-emerald-400"><i data-lucide="share-2" class="w-5 h-5"></i></div>
-                <div><h3 class="text-sm font-bold text-slate-200">End of Day Reporting Engine</h3><p class="text-xs text-slate-400">Transmit structural system milestones cleanly to WhatsApp.</p></div>
+                <div><h3 class="text-sm font-bold dynamic-title">End of Day Reporting Engine</h3><p class="text-xs dynamic-subtext">Transmit structural system milestones cleanly to WhatsApp.</p></div>
             </div>
             <button onclick="dispatchWhatsAppEOD()" class="clickable-element w-full sm:w-auto px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-sm font-semibold flex items-center justify-center gap-2">
                 <i data-lucide="message-square" class="w-4 h-4"></i><span>Transmit EOD via WhatsApp</span>
@@ -165,11 +206,11 @@
         <!-- Master Work Matrix -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             <div class="lg:col-span-7 space-y-6">
-                <!-- Weekly Recurring Context Engine Tasks -->
+                <!-- Weekly Recurring Focus Block -->
                 <div class="glass-panel rounded-3xl p-6">
                     <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-lg font-bold flex items-center gap-3"><i data-lucide="calendar" class="text-indigo-400"></i>Weekly Strategy Focus</h2>
-                        <span id="dayTaskCount" class="text-xs bg-slate-800 text-slate-400 px-3 py-1 rounded-full border border-slate-700/60 font-medium">0 tasks</span>
+                        <h2 class="text-lg font-bold flex items-center gap-3 dynamic-title"><i data-lucide="calendar" class="text-indigo-500"></i>Weekly Strategy Focus</h2>
+                        <span id="dayTaskCount" class="text-xs bg-slate-200 dark:bg-slate-800 dynamic-subtext px-3 py-1 rounded-full border border-slate-300 dark:border-slate-700/60 font-medium">0 tasks</span>
                     </div>
                     <div id="dayTaskContainer" class="space-y-2.5 min-h-[150px]"></div>
                 </div>
@@ -177,26 +218,26 @@
                 <!-- Brand Core Marketing Execution Tasks -->
                 <div class="glass-panel rounded-3xl p-6">
                     <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-lg font-bold flex items-center gap-3"><i data-lucide="check-square" class="text-purple-400"></i>Marketing Execution Roadmap</h2>
-                        <span id="brandTaskCount" class="text-xs bg-slate-800 text-slate-400 px-3 py-1 rounded-full border border-slate-700/60 font-medium">0 tasks</span>
+                        <h2 class="text-lg font-bold flex items-center gap-3 dynamic-title"><i data-lucide="check-square" class="text-purple-500"></i>Marketing Execution Roadmap</h2>
+                        <span id="brandTaskCount" class="text-xs bg-slate-200 dark:bg-slate-800 dynamic-subtext px-3 py-1 rounded-full border border-slate-300 dark:border-slate-700/60 font-medium">0 tasks</span>
                     </div>
                     <div id="brandTaskContainer" class="space-y-2.5 min-h-[150px]"></div>
                 </div>
             </div>
 
             <div class="lg:col-span-5 space-y-6">
-                <!-- Department Department-Wide Standard KPIs -->
+                <!-- Department Core Mandates Checklists -->
                 <div class="glass-panel rounded-3xl p-6">
                     <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-lg font-bold flex items-center gap-3"><i data-lucide="refresh-cw" class="text-emerald-400"></i>Department Core Mandates</h2>
-                        <span id="recurringTaskCount" class="text-xs bg-slate-800 text-slate-400 px-3 py-1 rounded-full border border-slate-700/60 font-medium">0 tasks</span>
+                        <h2 class="text-lg font-bold flex items-center gap-3 dynamic-title"><i data-lucide="refresh-cw" class="text-emerald-500"></i>Department Core Mandates</h2>
+                        <span id="recurringTaskCount" class="text-xs bg-slate-200 dark:bg-slate-800 dynamic-subtext px-3 py-1 rounded-full border border-slate-300 dark:border-slate-700/60 font-medium">0 checks</span>
                     </div>
                     <div id="recurringTaskContainer" class="space-y-2.5 max-h-[360px] overflow-y-auto pr-1"></div>
                 </div>
 
-                <!-- Scaling Social Milestones (Weekly Metrics Framework) -->
+                <!-- Scaling Social Milestones -->
                 <div class="glass-panel rounded-3xl p-6">
-                    <h2 class="text-lg font-bold mb-5 flex items-center gap-3"><i data-lucide="rocket" class="text-amber-400"></i>Social & Growth Milestones</h2>
+                    <h2 class="text-lg font-bold mb-5 flex items-center gap-3 dynamic-title"><i data-lucide="rocket" class="text-amber-500"></i>Social & Growth Milestones</h2>
                     <div id="weeklyTaskContainer" class="space-y-3.5"></div>
                 </div>
             </div>
@@ -207,7 +248,6 @@
     <script>
         const GOOGLE_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbxmpqpLCdjfjQh6d0ZpiUzHKGY3OcVIc1NYmteQHhi0SxWWMExlZi_DNK2yN7xMoq7Z/exec";
 
-        // Balanced Corporate Strategic Framework Architecture Data Map
         const marketingSchema = {
             schedules: {
                 Monday: ["Content planning", "Competitor analysis", "Lead review"],
@@ -260,7 +300,7 @@
         const businessLabels = { all: "All Active Businesses", good_earth: "🏡 Good Earth Homestay", camp_alpha: "⛺ Camp Alpha", express_stays: "⚡ ExpressStays" };
 
         let appState = {
-            currentDay: "Monday", selectedBusiness: "all", globalLeads: 0, globalReviews: 0,
+            currentDay: "Monday", selectedBusiness: "all", globalLeads: 0, globalReviews: 0, currentTheme: "dark",
             businesses: { good_earth: { completedTasks: {}, weeklyCounters: {} }, camp_alpha: { completedTasks: {}, weeklyCounters: {} }, express_stays: { completedTasks: {}, weeklyCounters: {} } }
         };
 
@@ -275,6 +315,28 @@
             document.getElementById('daySelector').value = appState.currentDay;
         }
 
+        // --- Theme Engine Control Operations ---
+        function toggleTheme() {
+            appState.currentTheme = (appState.currentTheme === "dark") ? "light" : "dark";
+            applyThemeStylesheet();
+            pushToGoogleSheets();
+        }
+
+        function applyThemeStylesheet() {
+            const body = document.body;
+            const icon = document.getElementById('themeIcon');
+            if (appState.currentTheme === "light") {
+                body.className = "theme-light min-h-screen p-4 md:p-8";
+                icon.setAttribute('data-lucide', 'moon');
+                icon.className = "w-4 h-4 text-indigo-600";
+            } else {
+                body.className = "theme-dark min-h-screen p-4 md:p-8";
+                icon.setAttribute('data-lucide', 'sun');
+                icon.className = "w-4 h-4 text-amber-400";
+            }
+            lucide.createIcons();
+        }
+
         async function pullFromGoogleSheets() {
             updateSyncIndicator('sync', 'Fetching Cloud Records...');
             try {
@@ -283,16 +345,18 @@
                 
                 if (cloudData && cloudData.businesses) {
                     appState = cloudData;
+                    if(!appState.currentTheme) appState.currentTheme = "dark";
                     document.getElementById('businessSelector').value = appState.selectedBusiness || "all";
                     updateSyncIndicator('success', 'Cloud State Synchronized');
                 } else {
-                    updateSyncIndicator('warn', 'Empty Cloud DB. Initializing Structure.');
+                    updateSyncIndicator('warn', 'Empty Cloud DB. Building Standby Cache.');
                     loadFallbackLocalStorage();
                 }
             } catch (e) {
-                updateSyncIndicator('warn', 'Offline Engine Target. Loaded Local Standby.');
+                updateSyncIndicator('warn', 'Offline Target. Loaded Local Standby.');
                 loadFallbackLocalStorage();
             }
+            applyThemeStylesheet();
             renderEngineWorkspace();
         }
 
@@ -314,6 +378,7 @@
         function loadFallbackLocalStorage() {
             const cache = localStorage.getItem('enterprise_marketing_state_v3');
             if (cache) appState = JSON.parse(cache);
+            if (!appState.currentTheme) appState.currentTheme = "dark";
             
             activeBusinessProfiles.forEach(bId => {
                 marketingSchema.weeklyGrowth[bId].forEach(item => {
@@ -343,8 +408,8 @@
             const card = document.getElementById(`card-${key}`);
             const text = document.getElementById(`text-${key}`);
             if (card && text) {
-                if (biz.completedTasks[key]) { card.classList.add('opacity-30'); text.classList.add('line-through', 'text-slate-500'); }
-                else { card.classList.remove('opacity-30'); text.classList.remove('line-through', 'text-slate-500'); }
+                if (biz.completedTasks[key]) { card.classList.add('opacity-30'); text.classList.add('line-through', 'text-slate-400'); }
+                else { card.classList.remove('opacity-30'); text.classList.remove('line-through', 'text-slate-400'); }
             }
             pushToGoogleSheets();
         }
@@ -423,62 +488,57 @@
             const isAllMode = appState.selectedBusiness === "all";
             const dayTasks = marketingSchema.schedules[appState.currentDay] || [];
             
-            // Render Stream Component 1: Weekday Focus
             const dayContainer = document.getElementById('dayTaskContainer');
             document.getElementById('dayTaskCount').innerText = `${dayTasks.length} tasks`;
             
             if (dayTasks.length === 0) {
-                dayContainer.innerHTML = `<div class="text-center py-12 glass-card rounded-2xl"><h4 class="text-slate-200 font-semibold">Weekly Cooldown Suspend</h4></div>`;
+                dayContainer.innerHTML = `<div class="text-center py-12 glass-card rounded-2xl"><h4 class="font-semibold dynamic-title">Weekly Cooldown Active</h4></div>`;
             } else {
                 dayContainer.innerHTML = dayTasks.map((task, idx) => {
-                    return `<div class="glass-card rounded-xl p-4 flex justify-between items-center opacity-80 border-l-2 border-l-indigo-500/50"><span class="text-sm font-medium text-slate-200">${task}</span><div class="text-slate-500"><i data-lucide="arrow-right" class="w-4 h-4"></i></div></div>`;
+                    return `<div class="glass-card rounded-xl p-4 flex justify-between items-center opacity-80 border-l-2 border-l-indigo-500"><span class="text-sm font-medium dynamic-title">${task}</span><div class="text-slate-400"><i data-lucide="arrow-right" class="w-4 h-4"></i></div></div>`;
                 }).join('');
             }
 
-            // Render Stream Component 2: Execution Roadmaps
             const brandContainer = document.getElementById('brandTaskContainer');
-            
             if (isAllMode) {
-                document.getElementById('brandTaskCount').innerText = "Select profile to track tasks";
-                brandContainer.innerHTML = `<div class="text-center py-12 glass-card rounded-2xl text-xs text-slate-500">Cross-business execution checklist loaded. Choose a specific brand column filter above to start checking off items.</div>`;
+                document.getElementById('brandTaskCount').innerText = "Select profile to verify";
+                brandContainer.innerHTML = `<div class="text-center py-12 glass-card rounded-2xl text-xs dynamic-subtext px-4">Cross-business execution checklist loaded. Choose a specific brand filter above to start checking off roadmap actions.</div>`;
             } else {
                 const activeBrandTasks = marketingSchema.brandTasks[appState.selectedBusiness] || [];
-                document.getElementById('brandTaskCount').innerText = `${activeBrandTasks.length} workflows`;
+                document.getElementById('brandTaskCount').innerText = `${activeBrandTasks.length} tasks`;
                 const biz = appState.businesses[appState.selectedBusiness];
                 
                 brandContainer.innerHTML = activeBrandTasks.map((task, idx) => {
                     const key = `brand-${idx}`; const isChecked = !!biz.completedTasks[key];
-                    return `<div id="card-${key}" class="clickable-element glass-card rounded-xl p-4 flex items-center justify-between cursor-pointer select-none ${isChecked ? 'opacity-30' : ''}" onclick="document.getElementById('chk-${key}').click()"><div class="flex items-center gap-3.5 min-w-0"><input type="checkbox" id="chk-${key}" ${isChecked ? 'checked' : ''} onclick="event.stopPropagation(); toggleTaskCheck('${key}')" class="peer w-5 h-5 rounded-md border border-slate-700 bg-slate-900/60 appearance-none checked:bg-purple-500 cursor-pointer"><span id="text-${key}" class="text-sm font-medium text-slate-200 truncate ${isChecked ? 'line-through text-slate-500' : ''}">${task}</span></div><div class="text-slate-600"><i data-lucide="chevron-right" class="w-4 h-4"></i></div></div>`;
+                    return `<div id="card-${key}" class="clickable-element glass-card rounded-xl p-4 flex items-center justify-between cursor-pointer select-none ${isChecked ? 'opacity-30' : ''}" onclick="document.getElementById('chk-${key}').click()"><div class="flex items-center gap-3.5 min-w-0"><input type="checkbox" id="chk-${key}" ${isChecked ? 'checked' : ''} onclick="event.stopPropagation(); toggleTaskCheck('${key}')" class="peer w-5 h-5 rounded-md border border-slate-400 dark:border-slate-700 bg-slate-900/10 dark:bg-slate-900/60 appearance-none checked:bg-purple-500 cursor-pointer"><span id="text-${key}" class="text-sm font-medium dynamic-title truncate ${isChecked ? 'line-through opacity-50' : ''}">${task}</span></div><div class="text-slate-400"><i data-lucide="chevron-right" class="w-4 h-4"></i></div></div>`;
                 }).join('');
             }
 
-            // Render Stream Component 3: Core Recurring Department Tasks
             const recContainer = document.getElementById('recurringTaskContainer');
             document.getElementById('recurringTaskCount').innerText = `${marketingSchema.recurring.length} checks`;
             
             if (isAllMode) {
                 recContainer.innerHTML = marketingSchema.recurring.map((task, idx) => {
                     let closed = 0; activeBusinessProfiles.forEach(bId => { if (appState.businesses[bId].completedTasks[`rec-${idx}`]) closed++; });
-                    return `<div class="glass-card rounded-xl p-3.5 flex justify-between text-xs opacity-70"><span class="text-slate-300 truncate">${task}</span><span class="bg-emerald-950 text-emerald-400 text-[10px] px-2 py-0.5 rounded border border-emerald-800/30 font-bold">${closed}/${activeBusinessProfiles.length} DONE</span></div>`;
+                    return `<div class="glass-card rounded-xl p-3.5 flex justify-between text-xs opacity-70"><span class="dynamic-title truncate">${task}</span><span class="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] px-2 py-0.5 rounded border border-emerald-500/20 font-bold">${closed}/${activeBusinessProfiles.length} DONE</span></div>`;
                 }).join('');
             } else {
                 const biz = appState.businesses[appState.selectedBusiness];
                 recContainer.innerHTML = marketingSchema.recurring.map((task, idx) => {
                     const key = `rec-${idx}`; const isChecked = !!biz.completedTasks[key];
-                    return `<div id="card-${key}" class="clickable-element glass-card rounded-xl p-3.5 flex items-center justify-between cursor-pointer select-none ${isChecked ? 'opacity-30' : ''}" onclick="document.getElementById('chk-${key}').click()"><div class="flex items-center gap-3 min-w-0"><input type="checkbox" id="chk-${key}" ${isChecked ? 'checked' : ''} onclick="event.stopPropagation(); toggleTaskCheck('${key}')" class="w-4.5 h-4.5 rounded-md border border-slate-700 bg-slate-900/60 appearance-none checked:bg-emerald-500 cursor-pointer"><span id="text-${key}" class="text-xs font-medium text-slate-300 truncate ${isChecked ? 'line-through text-slate-600' : ''}">${task}</span></div></div>`;
+                    return `<div id="card-${key}" class="clickable-element glass-card rounded-xl p-3.5 flex items-center justify-between cursor-pointer select-none ${isChecked ? 'opacity-30' : ''}" onclick="document.getElementById('chk-${key}').click()"><div class="flex items-center gap-3 min-w-0"><input type="checkbox" id="chk-${key}" ${isChecked ? 'checked' : ''} onclick="event.stopPropagation(); toggleTaskCheck('${key}')" class="w-4.5 h-4.5 rounded-md border border-slate-400 dark:border-slate-700 bg-slate-900/10 dark:bg-slate-900/60 appearance-none checked:bg-emerald-500 cursor-pointer"><span id="text-${key}" class="text-xs font-medium dynamic-title truncate ${isChecked ? 'line-through opacity-50' : ''}">${task}</span></div></div>`;
                 }).join('');
             }
 
-            // Render Stream Component 4: Dynamic Metrics Framework
             const weeklyContainer = document.getElementById('weeklyTaskContainer');
             if (isAllMode) {
                 let metrics = {}; activeBusinessProfiles.forEach(bId => { marketingSchema.weeklyGrowth[bId].forEach(item => { if(!metrics[item.text]) metrics[item.text] = { c: 0, t: 0 }; metrics[item.text].t += item.target; metrics[item.text].c += (appState.businesses[bId].weeklyCounters[item.id] || 0); }); });
-                weeklyContainer.innerHTML = Object.keys(metrics).map(k => `<div class="glass-card rounded-xl p-4 space-y-2.5 opacity-80"><div class="flex justify-between text-xs font-medium text-slate-300"><span>${k}</span><span class="font-bold text-indigo-400">${metrics[k].c}/${metrics[k].t}</span></div><div class="w-full bg-slate-950 h-1 rounded-full"><div style="width: ${(metrics[k].c/metrics[k].t)*100}%" class="h-full bg-indigo-500"></div></div></div>`).join('');
+                weeklyContainer.innerHTML = Object.keys(metrics).map(k => `<div class="glass-card rounded-xl p-4 space-y-2.5 opacity-80"><div class="flex justify-between text-xs font-medium dynamic-title"><span>${k}</span><span class="font-bold text-indigo-500 dark:text-indigo-400">${metrics[k].c}/${metrics[k].t}</span></div><div class="w-full bg-slate-300 dark:bg-slate-950 h-1 rounded-full"><div style="width: ${(metrics[k].c/metrics[k].t)*100}%" class="h-full bg-indigo-500"></div></div></div>`).join('');
             } else {
                 const bId = appState.selectedBusiness; const biz = appState.businesses[bId];
                 weeklyContainer.innerHTML = marketingSchema.weeklyGrowth[bId].map(item => {
                     const current = biz.weeklyCounters[item.id] || 0; const isDone = current === item.target;
-                    return `<div id="wcard-${item.id}" class="glass-card rounded-xl p-4 space-y-2.5 ${isDone ? 'opacity-40' : ''}"><div class="flex justify-between items-start"><span class="text-xs font-medium text-slate-200">${item.text}</span><span id="count-${item.id}" class="text-xs font-bold font-mono ${isDone ? 'text-emerald-400' : 'text-amber-400'}">${current}/${item.target}</span></div><div class="flex items-center gap-3"><div class="w-full bg-slate-950 h-1.5 rounded-full"><div id="fill-${item.id}" style="width: ${(current/item.target)*100}%" class="h-full rounded-full ${isDone ? 'bg-emerald-500' : 'bg-amber-500'}"></div></div><div class="flex gap-1"><button onclick="modifyCounter('${bId}', '${item.id}', -1, ${item.target})" class="w-6 h-6 rounded bg-slate-800 text-slate-400 flex items-center justify-center border border-slate-700/50 text-xs font-bold">-</button><button onclick="modifyCounter('${bId}', '${item.id}', 1, ${item.target})" class="w-6 h-6 rounded bg-indigo-600 text-white flex items-center justify-center text-xs font-bold">+</button></div></div></div>`;
+                    return `<div id="wcard-${item.id}" class="glass-card rounded-xl p-4 space-y-2.5 ${isDone ? 'opacity-40' : ''}"><div class="flex justify-between items-start"><span class="text-xs font-medium dynamic-title">${item.text}</span><span id="count-${item.id}" class="text-xs font-bold font-mono ${isDone ? 'text-emerald-500' : 'text-amber-500'}">${current}/${item.target}</span></div><div class="flex items-center gap-3"><div class="w-full bg-slate-300 dark:bg-slate-950 h-1.5 rounded-full"><div id="fill-${item.id}" style="width: ${(current/item.target)*100}%" class="h-full rounded-full ${isDone ? 'bg-emerald-500' : 'bg-amber-500'}"></div></div><div class="flex gap-1"><button onclick="modifyCounter('${bId}', '${item.id}', -1, ${item.target})" class="w-6 h-6 rounded bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-400 flex items-center justify-center border border-slate-300 dark:border-slate-700/50 text-xs font-bold select-none">-</button><button onclick="modifyCounter('${bId}', '${item.id}', 1, ${item.target})" class="w-6 h-6 rounded bg-indigo-600 text-white flex items-center justify-center text-xs font-bold select-none">+</button></div></div></div>`;
                 }).join('');
             }
             lucide.createIcons();
