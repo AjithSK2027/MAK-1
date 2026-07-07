@@ -17,7 +17,6 @@
             background-attachment: fixed;
         }
 
-        /* Glassmorphism Framework Specs */
         .glass-panel {
             background: rgba(255, 255, 255, 0.02);
             backdrop-filter: blur(20px);
@@ -40,21 +39,20 @@
             transform: translateY(-1px);
         }
 
-        .clickable-element {
-            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .clickable-element:active {
-            transform: scale(0.97);
-        }
-
-        /* Custom Track Elements */
+        .clickable-element { transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1); }
+        .clickable-element:active { transform: scale(0.97); }
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.08); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.15); }
     </style>
 </head>
 <body class="text-slate-100 min-h-screen p-4 md:p-8">
+
+    <!-- Cloud Sync Status Indicator Toast -->
+    <div id="syncIndicator" class="fixed bottom-6 right-6 glass-panel rounded-xl px-4 py-2 text-xs flex items-center gap-2 border border-slate-700/50 z-50">
+        <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse" id="syncDot"></span>
+        <span id="syncText" class="text-slate-400">Sync Engine Initializing...</span>
+    </div>
 
     <div class="max-w-7xl mx-auto space-y-6">
         
@@ -66,310 +64,307 @@
                 </div>
                 <div>
                     <h1 class="text-2xl font-bold tracking-tight bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">Marketing Command Suite</h1>
-                    <p class="text-xs text-slate-400">Enterprise Multi-Property Strategy Matrix</p>
+                    <p class="text-xs text-slate-400">Head: Ajith • Multi-Property Strategy Matrix</p>
                 </div>
             </div>
             
-            <!-- Controls Interface Group -->
             <div class="flex flex-wrap items-center gap-3 w-full lg:w-auto">
-                <!-- Business Switcher Filter Hardware -->
-                <div class="relative min-w-[210px] flex-1 lg:flex-initial">
+                <div class="relative min-w-[220px] flex-1 lg:flex-initial">
                     <select id="businessSelector" onchange="changeBusiness(this.value)" class="w-full appearance-none glass-card rounded-xl px-4 py-3 text-sm font-semibold text-indigo-300 outline-none cursor-pointer pr-10 border border-indigo-500/20 focus:border-indigo-500/60">
                         <option value="all">📊 All Businesses Dashboard</option>
-                        <option value="camp_alpha">⛺ Camp Alpha</option>
                         <option value="good_earth">🏡 Good Earth Homestay</option>
-                        <option value="malnad_media">🎬 Malnad Media</option>
+                        <option value="camp_alpha">⛺ Camp Alpha</option>
+                        <option value="express_stays">⚡ ExpressStays (Agency)</option>
                     </select>
                     <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-indigo-400">
                         <i data-lucide="chevron-down" class="w-4 h-4"></i>
                     </div>
                 </div>
 
-                <!-- Day Select System Dropdown -->
                 <div class="relative min-w-[160px] flex-1 lg:flex-initial">
                     <select id="daySelector" onchange="changeDay(this.value)" class="w-full appearance-none glass-card rounded-xl px-4 py-3 text-sm font-medium text-slate-200 outline-none cursor-pointer pr-10 focus:border-slate-500/40">
-                        <option value="Monday">Monday</option>
-                        <option value="Tuesday">Tuesday</option>
-                        <option value="Wednesday">Wednesday</option>
-                        <option value="Thursday">Thursday</option>
-                        <option value="Friday">Friday</option>
-                        <option value="Saturday">Saturday</option>
-                        <option value="Sunday">Sunday (Holiday)</option>
+                        <option value="Monday">Monday</option><option value="Tuesday">Tuesday</option><option value="Wednesday">Wednesday</option><option value="Thursday">Thursday</option><option value="Friday">Friday</option><option value="Saturday">Saturday</option><option value="Sunday">Sunday (Holiday)</option>
                     </select>
                     <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
                         <i data-lucide="calendar-days" class="w-4 h-4"></i>
                     </div>
                 </div>
 
-                <button onclick="resetAllProgress()" class="clickable-element glass-card hover:bg-rose-500/10 hover:text-rose-400 border-rose-500/10 p-3 rounded-xl text-slate-400 flex items-center justify-center h-[46px]" title="Flush Workspace Data">
+                <button onclick="resetAllProgress()" class="clickable-element glass-card hover:bg-rose-500/10 hover:text-rose-400 border-rose-500/10 p-3 rounded-xl text-slate-400 flex items-center justify-center h-[46px]">
                     <i data-lucide="refresh-cw" class="w-4 h-4"></i>
                 </button>
             </div>
         </header>
 
-        <!-- Dynamic Context Notification Strip -->
-        <div id="contextStrip" class="hidden glass-panel rounded-2xl p-4 bg-gradient-to-r from-indigo-500/5 to-transparent border-l-4 border-l-indigo-500 flex items-center gap-3 text-sm text-slate-300">
-            <i data-lucide="info" class="w-4 h-4 text-indigo-400 shrink-0"></i>
-            <span>Viewing aggregated metrics across all active profiles. Select a single business profile above to interact with specific checklists.</span>
+        <!-- Department High-Level KPIs Panel -->
+        <div id="globalKpiPanel" class="glass-panel rounded-3xl p-6 grid grid-cols-1 md:grid-cols-2 gap-6 bg-gradient-to-br from-slate-900/40 to-indigo-950/20">
+            <div>
+                <div class="flex justify-between items-center mb-2">
+                    <div class="flex items-center gap-2 text-sm font-bold text-slate-300">
+                        <i data-lucide="users" class="w-4 h-4 text-sky-400"></i>
+                        <span>Lead Generation (Qualified Targets)</span>
+                    </div>
+                    <span id="leadCounterTxt" class="text-xs font-mono font-bold text-sky-400">0/150 leads/mo</span>
+                </div>
+                <div class="flex items-center gap-3 bg-slate-950/60 p-3 rounded-xl border border-slate-800">
+                    <div class="w-full bg-slate-900 h-2 rounded-full overflow-hidden">
+                        <div id="leadBar" style="width: 0%" class="h-full bg-sky-500 transition-all duration-300"></div>
+                    </div>
+                    <div class="flex gap-1 shrink-0">
+                        <button onclick="adjustGlobalCounter('leads', -5, 150)" class="w-6 h-6 rounded bg-slate-800 text-xs flex items-center justify-center font-bold text-slate-400">-</button>
+                        <button onclick="adjustGlobalCounter('leads', 5, 150)" class="w-6 h-6 rounded bg-sky-600 text-xs flex items-center justify-center font-bold text-white">+</button>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="flex justify-between items-center mb-2">
+                    <div class="flex items-center gap-2 text-sm font-bold text-slate-300">
+                        <i data-lucide="award" class="w-4 h-4 text-emerald-400"></i>
+                        <span>Review & Reputation Management</span>
+                    </div>
+                    <span id="reviewCounterTxt" class="text-xs font-mono font-bold text-emerald-400">0/70 reviews</span>
+                </div>
+                <div class="flex items-center gap-3 bg-slate-950/60 p-3 rounded-xl border border-slate-800">
+                    <div class="w-full bg-slate-900 h-2 rounded-full overflow-hidden">
+                        <div id="reputationBar" style="width: 0%" class="h-full bg-emerald-500 transition-all duration-300"></div>
+                    </div>
+                    <div class="flex gap-1 shrink-0">
+                        <button onclick="adjustGlobalCounter('reviews', -1, 70)" class="w-6 h-6 rounded bg-slate-800 text-xs flex items-center justify-center font-bold text-slate-400">-</button>
+                        <button onclick="adjustGlobalCounter('reviews', 1, 70)" class="w-6 h-6 rounded bg-emerald-600 text-xs flex items-center justify-center font-bold text-white">+</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <!-- Master Analytics Dashboard Ring -->
+        <!-- Master Analytics Cards -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div class="glass-panel rounded-2xl p-5 flex items-center justify-between border-b-2 border-b-indigo-500/30">
-                <div>
-                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Daily Target Velocity</p>
-                    <h3 id="dayProgressTxt" class="text-3xl font-bold tracking-tight mt-1 text-indigo-400">0%</h3>
-                </div>
-                <div class="w-14 h-14 rounded-xl glass-card flex items-center justify-center text-indigo-400 border border-indigo-500/10">
-                    <i data-lucide="target" class="w-6 h-6"></i>
-                </div>
+                <div><p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Weekly Target Progress</p><h3 id="dayProgressTxt" class="text-3xl font-bold mt-1 text-indigo-400">0%</h3></div>
+                <div class="w-14 h-14 rounded-xl glass-card flex items-center justify-center text-indigo-400"><i data-lucide="target" class="w-6 h-6"></i></div>
             </div>
             <div class="glass-panel rounded-2xl p-5 flex items-center justify-between border-b-2 border-b-emerald-500/30">
-                <div>
-                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Recurring Routine Yield</p>
-                    <h3 id="recurringProgressTxt" class="text-3xl font-bold tracking-tight mt-1 text-emerald-400">0%</h3>
-                </div>
-                <div class="w-14 h-14 rounded-xl glass-card flex items-center justify-center text-emerald-400 border border-emerald-500/10">
-                    <i data-lucide="zap" class="w-6 h-6"></i>
-                </div>
+                <div><p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Operational Checklist Yield</p><h3 id="recurringProgressTxt" class="text-3xl font-bold mt-1 text-emerald-400">0%</h3></div>
+                <div class="w-14 h-14 rounded-xl glass-card flex items-center justify-center text-emerald-400"><i data-lucide="zap" class="w-6 h-6"></i></div>
             </div>
             <div class="glass-panel rounded-2xl p-5 flex items-center justify-between border-b-2 border-b-amber-500/30">
-                <div>
-                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Weekly Scaling Impact</p>
-                    <h3 id="weeklyProgressTxt" class="text-3xl font-bold tracking-tight mt-1 text-amber-400">0%</h3>
-                </div>
-                <div class="w-14 h-14 rounded-xl glass-card flex items-center justify-center text-amber-400 border border-amber-500/10">
-                    <i data-lucide="gauge" class="w-6 h-6"></i>
-                </div>
+                <div><p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Social & Scaling Impact</p><h3 id="weeklyProgressTxt" class="text-3xl font-bold mt-1 text-amber-400">0%</h3></div>
+                <div class="w-14 h-14 rounded-xl glass-card flex items-center justify-center text-amber-400"><i data-lucide="gauge" class="w-6 h-6"></i></div>
             </div>
         </div>
 
-        <!-- Master Work Matrix Mapping -->
+        <!-- WhatsApp EOD Broadcaster Bar -->
+        <div class="glass-panel rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 bg-gradient-to-r from-emerald-500/5 to-indigo-500/5 border border-emerald-500/20">
+            <div class="flex items-center gap-3"><div class="p-2 bg-emerald-500/10 rounded-xl text-emerald-400"><i data-lucide="share-2" class="w-5 h-5"></i></div>
+                <div><h3 class="text-sm font-bold text-slate-200">End of Day Reporting Engine</h3><p class="text-xs text-slate-400">Transmit structural system milestones cleanly to WhatsApp.</p></div>
+            </div>
+            <button onclick="dispatchWhatsAppEOD()" class="clickable-element w-full sm:w-auto px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-sm font-semibold flex items-center justify-center gap-2">
+                <i data-lucide="message-square" class="w-4 h-4"></i><span>Transmit EOD via WhatsApp</span>
+            </button>
+        </div>
+
+        <!-- Master Work Matrix -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-            
-            <!-- Workspace Stream Container (Scheduled Tasks) -->
             <div class="lg:col-span-7 space-y-6">
+                <!-- Weekly Recurring Context Engine Tasks -->
                 <div class="glass-panel rounded-3xl p-6">
                     <div class="flex justify-between items-center mb-6">
-                        <div class="flex items-center gap-3">
-                            <div class="p-2 bg-indigo-500/10 rounded-xl text-indigo-400">
-                                <i data-lucide="check-square" class="w-5 h-5"></i>
-                            </div>
-                            <h2 id="dayViewTitle" class="text-lg font-bold tracking-tight text-slate-200">Scheduled Workload</h2>
-                        </div>
+                        <h2 class="text-lg font-bold flex items-center gap-3"><i data-lucide="calendar" class="text-indigo-400"></i>Weekly Strategy Focus</h2>
                         <span id="dayTaskCount" class="text-xs bg-slate-800 text-slate-400 px-3 py-1 rounded-full border border-slate-700/60 font-medium">0 tasks</span>
                     </div>
-                    
-                    <div id="dayTaskContainer" class="space-y-2.5 min-h-[150px]">
-                        <!-- Injected via JavaScript Lifecycle -->
-                    </div>
+                    <div id="dayTaskContainer" class="space-y-2.5 min-h-[150px]"></div>
                 </div>
 
-                <!-- EOD Report Generation Control Panel -->
-                <div class="glass-panel rounded-3xl p-6 bg-gradient-to-br from-indigo-950/20 to-transparent border border-indigo-500/10">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <div class="flex items-center gap-3">
-                            <div class="p-2.5 bg-green-500/10 rounded-xl text-green-400 border border-green-500/20">
-                                <i data-lucide="file-text" class="w-5 h-5"></i>
-                            </div>
-                            <div>
-                                <h3 class="font-bold text-slate-200">End of Day Reporting</h3>
-                                <p class="text-xs text-slate-400">Generate and package today's completed items for WhatsApp dispatch</p>
-                            </div>
-                        </div>
-                        <button onclick="generateEODReport()" class="clickable-element px-5 py-3 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white font-semibold text-sm rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-emerald-950/50">
-                            <i data-lucide="share-2" class="w-4 h-4"></i>
-                            Share EOD on WhatsApp
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Pipeline Tracking System Containers -->
-            <div class="lg:col-span-5 space-y-6">
-                
-                <!-- Daily Routines Platform Layer -->
+                <!-- Brand Core Marketing Execution Tasks -->
                 <div class="glass-panel rounded-3xl p-6">
                     <div class="flex justify-between items-center mb-6">
-                        <div class="flex items-center gap-3">
-                            <div class="p-2 bg-emerald-500/10 rounded-xl text-emerald-400">
-                                <i data-lucide="refresh-cw" class="w-5 h-5"></i>
-                            </div>
-                            <h2 class="text-lg font-bold tracking-tight text-slate-200">Daily Core Routines</h2>
-                        </div>
-                        <span id="recurringTaskCount" class="text-xs bg-slate-800 text-slate-400 px-3 py-1 rounded-full border border-slate-700/60 font-medium">0 tasks</span>
+                        <h2 class="text-lg font-bold flex items-center gap-3"><i data-lucide="check-square" class="text-purple-400"></i>Marketing Execution Roadmap</h2>
+                        <span id="brandTaskCount" class="text-xs bg-slate-800 text-slate-400 px-3 py-1 rounded-full border border-slate-700/60 font-medium">0 tasks</span>
                     </div>
-                    <div id="recurringTaskContainer" class="space-y-2.5 max-h-[360px] overflow-y-auto pr-1">
-                        <!-- Injected via JavaScript Lifecycle -->
-                    </div>
+                    <div id="brandTaskContainer" class="space-y-2.5 min-h-[150px]"></div>
                 </div>
-
-                <!-- Multiplier Strategy Module -->
-                <div class="glass-panel rounded-3xl p-6">
-                    <div class="flex justify-between items-center mb-5">
-                        <div class="flex items-center gap-3">
-                            <div class="p-2 bg-amber-500/10 rounded-xl text-amber-400">
-                                <i data-lucide="rocket" class="w-5 h-5"></i>
-                            </div>
-                            <h2 class="text-lg font-bold tracking-tight text-slate-200">Weekly Strategy Milestones</h2>
-                        </div>
-                    </div>
-                    <div id="weeklyTaskContainer" class="space-y-3.5">
-                        <!-- Injected via JavaScript Lifecycle -->
-                    </div>
-                </div>
-
             </div>
 
+            <div class="lg:col-span-5 space-y-6">
+                <!-- Department Department-Wide Standard KPIs -->
+                <div class="glass-panel rounded-3xl p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-lg font-bold flex items-center gap-3"><i data-lucide="refresh-cw" class="text-emerald-400"></i>Department Core Mandates</h2>
+                        <span id="recurringTaskCount" class="text-xs bg-slate-800 text-slate-400 px-3 py-1 rounded-full border border-slate-700/60 font-medium">0 tasks</span>
+                    </div>
+                    <div id="recurringTaskContainer" class="space-y-2.5 max-h-[360px] overflow-y-auto pr-1"></div>
+                </div>
+
+                <!-- Scaling Social Milestones (Weekly Metrics Framework) -->
+                <div class="glass-panel rounded-3xl p-6">
+                    <h2 class="text-lg font-bold mb-5 flex items-center gap-3"><i data-lucide="rocket" class="text-amber-400"></i>Social & Growth Milestones</h2>
+                    <div id="weeklyTaskContainer" class="space-y-3.5"></div>
+                </div>
+            </div>
         </div>
 
     </div>
 
-    <!-- Strategy Core Execution Architecture Engine -->
     <script>
-        // Production Grade Operational Schemas
+        const GOOGLE_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbxmpqpLCdjfjQh6d0ZpiUzHKGY3OcVIc1NYmteQHhi0SxWWMExlZi_DNK2yN7xMoq7Z/exec";
+
+        // Balanced Corporate Strategic Framework Architecture Data Map
         const marketingSchema = {
             schedules: {
-                Monday: ["Review previous week's performance", "Check booking inquiries", "Check OTA performance", "Review Google Business Profile insights", "Research 3 competitors", "Plan weekly content", "Write 7 captions", "Shoot property walkthrough", "Shoot drone footage (if applicable)", "Photograph rooms", "Photograph amenities", "Edit Reel", "Design carousel", "Publish Reel", "Publish carousel", "Publish stories", "Respond to comments", "Respond to DMs", "Reply to Google reviews", "Backup media"],
-                Tuesday: ["Shoot guest experiences", "Shoot food", "Shoot coffee plantation", "Shoot stream/pool", "Create cinematic Reel", "Create Story templates", "Upload photos to Google Business", "Update Google Business post", "Update website gallery", "Create Pinterest pins", "Engage with local tourism pages", "Follow up with previous inquiries", "Organize media folders"],
-                Wednesday: ["Collect guest testimonials", "Record video testimonials", "Ask guests for Google reviews", "Design testimonial graphics", "Publish customer success story", "Create before/after content", "Publish Reel", "Publish Stories", "Respond to messages", "Update FAQ", "Research trending audio"],
-                Thursday: ["Write blog article", "Optimize website SEO", "Add internal links", "Update homepage banner", "Update pricing page", "Refresh gallery", "Publish blog", "Share blog on social media", "Share blog on WhatsApp", "Create newsletter draft", "Check website speed", "Fix broken links"],
-                Friday: ["Design offer posters", "Create weekend package", "Publish promotional Reel", "Publish offer post", "WhatsApp broadcast", "Email previous guests", "Call warm leads", "Contact travel agents", "Contact event planners", "Contact corporate clients", "Contact influencers", "Update offers on Google Business"],
-                Saturday: ["Shoot behind-the-scenes", "Record staff introduction", "Record guest activities", "Create fun Reel", "Publish Stories", "Collaborate with nearby businesses", "Comment on local business pages", "Network with tourism partners", "Collect UGC", "Backup week's content"],
+                Monday: ["Content planning", "Competitor analysis", "Lead review"],
+                Tuesday: ["Content production", "Photography", "Videography"],
+                Wednesday: ["Editing", "Publishing", "Google Business updates"],
+                Thursday: ["SEO", "Blog writing", "Website updates"],
+                Friday: ["Sales campaigns", "Partnership outreach", "Lead follow-up"],
+                Saturday: ["Analytics", "Community engagement", "Guest interaction"],
                 Sunday: []
             },
-            recurring: ["Check WhatsApp inquiries", "Check Instagram DMs", "Check Facebook messages", "Reply to all comments", "Reply to Google reviews", "Reply to emails", "Check booking forms", "Update CRM", "Update task manager", "Upload raw media", "Backup edited files", "Write tomorrow's caption", "Publish stories", "Engage with 20 relevant accounts", "Follow up on pending leads", "Monitor competitor activity", "Save trending Reel ideas", "Save trending audio", "Record one B-roll clip", "Capture 10 new photos", "Capture 5 short videos"],
-            weeklyGrowth: [
-                { id: "w1", text: "Publish 6–7 Reels", target: 7 },
-                { id: "w2", text: "Publish 2–3 carousel posts", target: 3 },
-                { id: "w3", text: "Publish 1 blog article", target: 1 },
-                { id: "w4", text: "Send 1 email newsletter", target: 1 },
-                { id: "w5", text: "Upload 20+ Google Business photos", target: 20 },
-                { id: "w6", text: "Reach out to 10 influencers", target: 10 },
-                { id: "w7", text: "Reach out to 10 travel agents", target: 10 },
-                { id: "w8", text: "Reach out to 10 corporate clients", target: 10 },
-                { id: "w9", text: "Visit 1 local attraction for content", target: 1 },
-                { id: "w10", text: "Create 1 promotional campaign", target: 1 },
-                { id: "w11", text: "Collect 10 new Google reviews", target: 10 },
-                { id: "w12", text: "Refresh website homepage", target: 1 },
-                { id: "w13", text: "Review SEO rankings", target: 1 },
-                { id: "w14", text: "Analyze competitors", target: 1 },
-                { id: "w15", text: "Archive completed projects", target: 1 }
-            ]
-        };
-
-        // Readable Names Map for Report Cleanliness
-        const businessNamesMap = {
-            camp_alpha: "⛺ Camp Alpha",
-            good_earth: "🏡 Good Earth Homestay",
-            malnad_media: "🎬 Malnad Media"
-        };
-
-        const activeBusinessProfiles = ["camp_alpha", "good_earth", "malnad_media"];
-
-        // State Machine Storage Schema Architecture
-        let appState = {
-            currentDay: "Monday",
-            selectedBusiness: "all", 
-            businesses: {
-                camp_alpha: { completedTasks: {}, weeklyCounters: {} },
-                good_earth: { completedTasks: {}, weeklyCounters: {} },
-                malnad_media: { completedTasks: {}, weeklyCounters: {} }
+            recurring: [
+                "Respond to all inquiries within 30 minutes", "Follow up with all pending leads", 
+                "Maintain lead database", "Track lead source", "Send review request to 100% of guests", 
+                "Respond to 100% of reviews within 24 hours"
+            ],
+            brandTasks: {
+                good_earth: ["Property photography", "Room showcase", "Swimming pool content", "Food photography", "Guest testimonials", "Guest experience videos", "Weekend offers", "Local attraction posts", "Google Business updates", "Website gallery updates"],
+                camp_alpha: ["Camping experience videos", "Bonfire content", "Stream and nature content", "Adventure activities", "Drone footage", "Group bookings", "College packages", "Corporate outing promotions", "Guest testimonials", "Google Business updates"],
+                express_stays: ["Contact 20 new homestays/month", "Onboard 5 new partner properties/month", "Contact 10 corporate clients/month", "Contact 10 travel agencies/month", "Generate 100 travel inquiries/month", "Convert 20 confirmed bookings/month", "Follow up on all pending inquiries", "Publish 4 travel blogs/month", "Add 10 new destination pages/month", "Update travel packages weekly", "Improve package SEO", "Destination guides", "Travel itineraries", "\"Top 10\" destination posts", "Weekend getaway campaigns", "Festival package promotions", "Couple packages", "Family packages", "Group tour packages", "Corporate travel packages", "Customer travel stories", "Travel tips", "Packing guides", "Local food recommendations", "Hidden destination features", "Seasonal travel campaigns", "Email marketing", "WhatsApp broadcasts", "Google Ads optimization", "Meta Ads optimization", "Landing page optimization", "CRM updates"]
+            },
+            weeklyGrowth: {
+                good_earth: [
+                    { id: "ge_stories", text: "Stories Published Target", target: 13 },
+                    { id: "ge_reels", text: "Reels Dynamic Output", target: 5 },
+                    { id: "ge_posts", text: "Static Dashboard Posts", target: 6 },
+                    { id: "ge_growth", text: "Followers Growth Matrix", target: 50 },
+                    { id: "ge_photos", text: "Google Photos /week", target: 15 },
+                    { id: "ge_reviews", text: "Google Reviews /month", target: 30 },
+                    { id: "ge_offers", text: "Offers/Events Updates", target: 4 }
+                ],
+                camp_alpha: [
+                    { id: "ca_stories", text: "Stories Published Target", target: 15 },
+                    { id: "ca_reels", text: "Reels Dynamic Output", target: 6 },
+                    { id: "ca_posts", text: "Static Dashboard Posts", target: 8 },
+                    { id: "ca_growth", text: "Followers Growth Matrix", target: 50 },
+                    { id: "ca_photos", text: "Google Photos /week", target: 15 },
+                    { id: "ca_reviews", text: "Google Reviews /month", target: 20 },
+                    { id: "ca_offers", text: "Offers/Events Updates", target: 4 }
+                ],
+                express_stays: [
+                    { id: "es_stories", text: "Stories Published Target", target: 15 },
+                    { id: "es_reels", text: "Reels Dynamic Output", target: 6 },
+                    { id: "es_posts", text: "Static Dashboard Posts", target: 8 },
+                    { id: "es_growth", text: "Followers Growth Matrix", target: 50 }
+                ]
             }
+        };
+
+        const activeBusinessProfiles = ["good_earth", "camp_alpha", "express_stays"];
+        const businessLabels = { all: "All Active Businesses", good_earth: "🏡 Good Earth Homestay", camp_alpha: "⛺ Camp Alpha", express_stays: "⚡ ExpressStays" };
+
+        let appState = {
+            currentDay: "Monday", selectedBusiness: "all", globalLeads: 0, globalReviews: 0,
+            businesses: { good_earth: { completedTasks: {}, weeklyCounters: {} }, camp_alpha: { completedTasks: {}, weeklyCounters: {} }, express_stays: { completedTasks: {}, weeklyCounters: {} } }
         };
 
         window.addEventListener('DOMContentLoaded', () => {
             initializeRealtimeDay();
-            loadEngineState();
-            renderEngineWorkspace();
+            pullFromGoogleSheets();
         });
 
         function initializeRealtimeDay() {
             const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-            const realTimeDay = dayNames[new Date().getDay()];
-            appState.currentDay = realTimeDay;
-            document.getElementById('daySelector').value = realTimeDay;
+            appState.currentDay = dayNames[new Date().getDay()];
+            document.getElementById('daySelector').value = appState.currentDay;
         }
 
-        function loadEngineState() {
-            const cache = localStorage.getItem('enterprise_marketing_state_v2');
-            if (cache) {
-                try {
-                    const parsed = JSON.parse(cache);
-                    if (parsed.businesses) {
-                        activeBusinessProfiles.forEach(bId => {
-                            if (parsed.businesses[bId]) {
-                                appState.businesses[bId].completedTasks = parsed.businesses[bId].completedTasks || {};
-                                appState.businesses[bId].weeklyCounters = parsed.businesses[bId].weeklyCounters || {};
-                            }
-                        });
-                    }
-                    if (parsed.currentDay) appState.currentDay = parsed.currentDay;
-                    if (parsed.selectedBusiness) appState.selectedBusiness = parsed.selectedBusiness;
-                    document.getElementById('businessSelector').value = appState.selectedBusiness;
-                    document.getElementById('daySelector').value = appState.currentDay;
-                } catch (e) {
-                    console.error("Storage structural error encountered. State system protection loaded.", e);
+        async function pullFromGoogleSheets() {
+            updateSyncIndicator('sync', 'Fetching Cloud Records...');
+            try {
+                const response = await fetch(GOOGLE_SHEET_API_URL);
+                const cloudData = await response.json();
+                
+                if (cloudData && cloudData.businesses) {
+                    appState = cloudData;
+                    document.getElementById('businessSelector').value = appState.selectedBusiness || "all";
+                    updateSyncIndicator('success', 'Cloud State Synchronized');
+                } else {
+                    updateSyncIndicator('warn', 'Empty Cloud DB. Initializing Structure.');
+                    loadFallbackLocalStorage();
                 }
+            } catch (e) {
+                updateSyncIndicator('warn', 'Offline Engine Target. Loaded Local Standby.');
+                loadFallbackLocalStorage();
             }
+            renderEngineWorkspace();
+        }
 
-            // Fallback validation setup to verify schema arrays are structurally whole
+        async function pushToGoogleSheets() {
+            updateSyncIndicator('sync', 'Saving to Google Sheets...');
+            calculateOperationalMetrics();
+            localStorage.setItem('enterprise_marketing_state_v3', JSON.stringify(appState));
+
+            try {
+                await fetch(GOOGLE_SHEET_API_URL, {
+                    method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(appState)
+                });
+                updateSyncIndicator('success', 'Changes Saved in Cloud');
+            } catch (e) {
+                updateSyncIndicator('warn', 'Sync Failure. Stored in Device Cache.');
+            }
+        }
+
+        function loadFallbackLocalStorage() {
+            const cache = localStorage.getItem('enterprise_marketing_state_v3');
+            if (cache) appState = JSON.parse(cache);
+            
             activeBusinessProfiles.forEach(bId => {
-                marketingSchema.weeklyGrowth.forEach(item => {
-                    if (appState.businesses[bId].weeklyCounters[item.id] === undefined) {
-                        appState.businesses[bId].weeklyCounters[item.id] = 0;
-                    }
+                marketingSchema.weeklyGrowth[bId].forEach(item => {
+                    if (!appState.businesses[bId].weeklyCounters) appState.businesses[bId].weeklyCounters = {};
+                    if (appState.businesses[bId].weeklyCounters[item.id] === undefined) appState.businesses[bId].weeklyCounters[item.id] = 0;
                 });
             });
         }
 
-        function commitEngineState() {
-            localStorage.setItem('enterprise_marketing_state_v2', JSON.stringify(appState));
-            calculateOperationalMetrics();
+        function updateSyncIndicator(status, text) {
+            const dot = document.getElementById('syncDot');
+            const txt = document.getElementById('syncText');
+            txt.innerText = text;
+            if(status === 'sync') { dot.className = "w-2 h-2 rounded-full bg-blue-500 animate-pulse"; }
+            else if(status === 'success') { dot.className = "w-2 h-2 rounded-full bg-emerald-500"; }
+            else { dot.className = "w-2 h-2 rounded-full bg-amber-500"; }
         }
 
-        function changeBusiness(targetBusiness) {
-            appState.selectedBusiness = targetBusiness;
-            const strip = document.getElementById('contextStrip');
-            if (targetBusiness === "all") {
-                strip.classList.remove('hidden');
-            } else {
-                strip.classList.add('hidden');
-            }
-            commitEngineState();
-            renderEngineWorkspace();
-        }
-
-        function changeDay(targetDay) {
-            appState.currentDay = targetDay;
-            commitEngineState();
-            renderEngineWorkspace();
-        }
+        function changeBusiness(targetBusiness) { appState.selectedBusiness = targetBusiness; pushToGoogleSheets(); renderEngineWorkspace(); }
+        function changeDay(targetDay) { appState.currentDay = targetDay; pushToGoogleSheets(); renderEngineWorkspace(); }
 
         function toggleTaskCheck(key) {
-            if (appState.selectedBusiness === "all") return; // Read-only safeguard protection
-            
+            if (appState.selectedBusiness === "all") return; 
             const biz = appState.businesses[appState.selectedBusiness];
             biz.completedTasks[key] = !biz.completedTasks[key];
-            commitEngineState();
-
+            
             const card = document.getElementById(`card-${key}`);
             const text = document.getElementById(`text-${key}`);
             if (card && text) {
-                if (biz.completedTasks[key]) {
-                    card.classList.add('opacity-30');
-                    text.classList.add('line-through', 'text-slate-500');
-                } else {
-                    card.classList.remove('opacity-30');
-                    text.classList.remove('line-through', 'text-slate-500');
-                }
+                if (biz.completedTasks[key]) { card.classList.add('opacity-30'); text.classList.add('line-through', 'text-slate-500'); }
+                else { card.classList.remove('opacity-30'); text.classList.remove('line-through', 'text-slate-500'); }
             }
+            pushToGoogleSheets();
         }
 
-        function modifyCounter(id, change, target) {
-            if (appState.selectedBusiness === "all") return; // Read-only safeguard protection
+        function adjustGlobalCounter(field, change, target) {
+            if(field === 'leads') appState.globalLeads = Math.max(0, Math.min(target, appState.globalLeads + change));
+            else if(field === 'reviews') appState.globalReviews = Math.max(0, Math.min(target, appState.globalReviews + change));
+            pushToGoogleSheets();
+            renderGlobalKpiBars();
+        }
 
-            const biz = appState.businesses[appState.selectedBusiness];
+        function renderGlobalKpiBars() {
+            document.getElementById('leadCounterTxt').innerText = `${appState.globalLeads}/150 leads/mo`;
+            document.getElementById('leadBar').style.width = `${(appState.globalLeads / 150) * 100}%`;
+            document.getElementById('reviewCounterTxt').innerText = `${appState.globalReviews}/70 reviews`;
+            document.getElementById('reputationBar').style.width = `${(appState.globalReviews / 70) * 100}%`;
+        }
+
+        function modifyCounter(bId, id, change, target) {
+            const biz = appState.businesses[bId];
             let current = biz.weeklyCounters[id] || 0;
             current = Math.max(0, Math.min(target, current + change));
             biz.weeklyCounters[id] = current;
@@ -378,155 +373,49 @@
             const fillNode = document.getElementById(`fill-${id}`);
             if (counterNode && fillNode) {
                 counterNode.innerText = `${current}/${target}`;
-                const pct = (current / target) * 100;
-                fillNode.style.width = `${pct}%`;
-
-                const card = document.getElementById(`wcard-${id}`);
-                if (current === target) {
-                    card.classList.add('opacity-40');
-                    fillNode.className = "h-full rounded-full transition-all duration-300 bg-emerald-500";
-                } else {
-                    card.classList.remove('opacity-40');
-                    fillNode.className = "h-full rounded-full transition-all duration-300 bg-amber-500";
-                }
+                fillNode.style.width = `${(current / target) * 100}%`;
+                document.getElementById('wcard-' + id).className = `glass-card rounded-xl p-4 space-y-2.5 ${current === target ? 'opacity-40' : ''}`;
             }
-            commitEngineState();
+            pushToGoogleSheets();
         }
 
         function calculateOperationalMetrics() {
-            let totalDayTasks = 0, checkedDayTasks = 0;
-            let totalRecTasks = 0, checkedRecTasks = 0;
-            let grandWeeklyTarget = 0, grandWeeklyProgress = 0;
-
+            let totalDayTasks = 0, checkedDayTasks = 0, totalRecTasks = 0, checkedRecTasks = 0, grandWeeklyTarget = 0, grandWeeklyProgress = 0;
             const daySchemaCount = marketingSchema.schedules[appState.currentDay]?.length || 0;
             const recSchemaCount = marketingSchema.recurring.length;
-            let weeklySchemaTargetMax = 0;
-            marketingSchema.weeklyGrowth.forEach(i => weeklySchemaTargetMax += i.target);
-
             const profilesEvaluating = appState.selectedBusiness === "all" ? activeBusinessProfiles : [appState.selectedBusiness];
 
             profilesEvaluating.forEach(bId => {
                 const biz = appState.businesses[bId];
-                
-                // Add day performance metrics
                 totalDayTasks += daySchemaCount;
-                for (let i = 0; i < daySchemaCount; i++) {
-                    if (biz.completedTasks[`${appState.currentDay}-${i}`]) checkedDayTasks++;
-                }
-
-                // Add recurring baseline performance metrics
+                for (let i = 0; i < daySchemaCount; i++) if (biz.completedTasks[`${appState.currentDay}-${i}`]) checkedDayTasks++;
                 totalRecTasks += recSchemaCount;
-                for (let i = 0; i < recSchemaCount; i++) {
-                    if (biz.completedTasks[`rec-${i}`]) checkedRecTasks++;
-                }
-
-                // Add macro strategy goals execution metrics
-                grandWeeklyTarget += weeklySchemaTargetMax;
-                marketingSchema.weeklyGrowth.forEach(item => {
-                    grandWeeklyProgress += (biz.weeklyCounters[item.id] || 0);
-                });
+                for (let i = 0; i < recSchemaCount; i++) if (biz.completedTasks[`rec-${i}`]) checkedRecTasks++;
+                marketingSchema.weeklyGrowth[bId].forEach(item => { grandWeeklyTarget += item.target; grandWeeklyProgress += (biz.weeklyCounters[item.id] || 0); });
             });
 
-            const dayPct = totalDayTasks ? Math.round((checkedDayTasks / totalDayTasks) * 100) : 0;
-            const recPct = totalRecTasks ? Math.round((checkedRecTasks / totalRecTasks) * 100) : 0;
-            const weeklyPct = grandWeeklyTarget ? Math.round((grandWeeklyProgress / grandWeeklyTarget) * 100) : 0;
-
-            document.getElementById('dayProgressTxt').innerText = daySchemaCount === 0 ? "Holiday" : `${dayPct}%`;
-            document.getElementById('recurringProgressTxt').innerText = `${recPct}%`;
-            document.getElementById('weeklyProgressTxt').innerText = `${weeklyPct}%`;
+            document.getElementById('dayProgressTxt').innerText = daySchemaCount === 0 ? "Holiday" : `${totalDayTasks ? Math.round((checkedDayTasks / totalDayTasks) * 100) : 0}%`;
+            document.getElementById('recurringProgressTxt').innerText = `${totalRecTasks ? Math.round((checkedRecTasks / totalRecTasks) * 100) : 0}%`;
+            document.getElementById('weeklyProgressTxt').innerText = `${grandWeeklyTarget ? Math.round((grandWeeklyProgress / grandWeeklyTarget) * 100) : 0}%`;
+            renderGlobalKpiBars();
         }
 
-        // WhatsApp End of Day Report Generator Module
-        function generateEODReport() {
-            const dayTasks = marketingSchema.schedules[appState.currentDay] || [];
-            const daySchemaCount = dayTasks.length;
-            const recSchemaCount = marketingSchema.recurring.length;
-            
-            let reportText = `📝 *MARKETING ENGINE EOD REPORT*\n`;
-            reportText += `📅 *Day:* ${appState.currentDay}\n`;
-            reportText += `───────────────\n\n`;
-
-            const profiles = appState.selectedBusiness === "all" ? activeBusinessProfiles : [appState.selectedBusiness];
-
-            profiles.forEach(bId => {
-                const biz = appState.businesses[bId];
-                const labelName = businessNamesMap[bId] || bId;
-                
-                let completedDayList = [];
-                for (let i = 0; i < daySchemaCount; i++) {
-                    if (biz.completedTasks[`${appState.currentDay}-${i}`]) {
-                        completedDayList.push(dayTasks[i]);
-                    }
-                }
-
-                let completedRecList = [];
-                for (let i = 0; i < recSchemaCount; i++) {
-                    if (biz.completedTasks[`rec-${i}`]) {
-                        completedRecList.push(marketingSchema.recurring[i]);
-                    }
-                }
-
-                let growthStatus = [];
-                marketingSchema.weeklyGrowth.forEach(item => {
-                    const count = biz.weeklyCounters[item.id] || 0;
-                    if (count > 0) {
-                        growthStatus.push(`${item.text}: *${count}/${item.target}*`);
-                    }
-                });
-
-                reportText += `💼 *PROFILE: ${labelName.toUpperCase()}*\n`;
-                
-                // Scheduled Day Checkouts
-                reportText += `📈 *Scheduled Tasks (${completedDayList.length}/${daySchemaCount}):*\n`;
-                if(completedDayList.length === 0) {
-                    reportText += `  • _No scheduled tasks completed today._\n`;
-                } else {
-                    completedDayList.forEach(t => reportText += `  ✅ ${t}\n`);
-                }
-
-                // Daily Recurring Checkouts
-                reportText += `🔄 *Core Recurring Routines (${completedRecList.length}/${recSchemaCount}):*\n`;
-                if(completedRecList.length === 0) {
-                    reportText += `  • _No recurring tasks completed today._\n`;
-                } else {
-                    // Summarize to avoid massive blocks if all done
-                    if(completedRecList.length === recSchemaCount) {
-                        reportText += `  ⚡ *All ${recSchemaCount} recurring standard tasks completed successfully!*\n`;
-                    } else {
-                        completedRecList.forEach(t => reportText += `  🔹 ${t}\n`);
-                    }
-                }
-
-                // Strategic Counter updates
-                if(growthStatus.length > 0) {
-                    reportText += `🚀 *Weekly Growth Progress Update:*\n`;
-                    growthStatus.forEach(g => reportText += `  • ${g}\n`);
-                }
-
-                reportText += `\n`;
-            });
-
-            reportText += `───────────────\n`;
-            reportText += `📱 *Sent from Core Marketing Engine Command Suite.*`;
-
-            // Process URL Formulation for Global System Link
-            const encodedText = encodeURIComponent(reportText);
-            const whatsappUrl = `https://api.whatsapp.com/send?text=${encodedText}`;
-            
-            // Execute Dispatch window mapping anchor
-            window.open(whatsappUrl, '_blank');
+        function dispatchWhatsAppEOD() {
+            const dayProgress = document.getElementById('dayProgressTxt').innerText;
+            const recProgress = document.getElementById('recurringProgressTxt').innerText;
+            const weeklyProgress = document.getElementById('weeklyProgressTxt').innerText;
+            let message = `*📊 OPERATIONAL MARKETING EOD REPORT*\n*Scope:* ${businessLabels[appState.selectedBusiness]}\n-------------------------------------------\n\n*📈 METRICS TIMELINE*\n• Monthly Leads Pipeline: *${appState.globalLeads}/150*\n• Net Target Reviews: *${appState.globalReviews}/70*\n• Schedule Performance Flow: *${dayProgress}*\n• Department Mandates Closed: *${recProgress}*\n• Social Scaling Velocity: *${weeklyProgress}*\n\n_Generated via Cloud Synced Dashboard Engine._`;
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`, '_blank');
         }
 
         function resetAllProgress() {
-            if (confirm("Confirm enterprise structural sweep? All stored data records for all profiles will be wiped clean.")) {
+            if (confirm("Confirm entire database wipe? This flushes both local cache and Google Sheet records.")) {
+                appState.globalLeads = 0; appState.globalReviews = 0;
                 activeBusinessProfiles.forEach(bId => {
                     appState.businesses[bId].completedTasks = {};
-                    marketingSchema.weeklyGrowth.forEach(item => {
-                        appState.businesses[bId].weeklyCounters[item.id] = 0;
-                    });
+                    marketingSchema.weeklyGrowth[bId].forEach(item => appState.businesses[bId].weeklyCounters[item.id] = 0);
                 });
-                commitEngineState();
-                renderEngineWorkspace();
+                pushToGoogleSheets();
             }
         }
 
@@ -534,141 +423,64 @@
             const isAllMode = appState.selectedBusiness === "all";
             const dayTasks = marketingSchema.schedules[appState.currentDay] || [];
             
-            // Render Target 1: Core Daily Task Workspace Columns
+            // Render Stream Component 1: Weekday Focus
             const dayContainer = document.getElementById('dayTaskContainer');
-            document.getElementById('dayTaskCount').innerText = `${dayTasks.length} tasks per profile`;
+            document.getElementById('dayTaskCount').innerText = `${dayTasks.length} tasks`;
             
             if (dayTasks.length === 0) {
-                dayContainer.innerHTML = `
-                    <div class="flex flex-col items-center justify-center py-12 px-4 text-center glass-card rounded-2xl border-dashed border-slate-700/60">
-                        <div class="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-400 mb-3"><i data-lucide="sparkles" class="w-6 h-6"></i></div>
-                        <h4 class="text-base font-semibold text-slate-200">System Cooldown Active</h4>
-                        <p class="text-xs text-slate-500 max-w-xs mt-1">Sunday operations suspended. Pure high-level conceptual tracking enabled.</p>
-                    </div>`;
-            } else if (isAllMode) {
-                // Aggregated view formatting layout
-                dayContainer.innerHTML = dayTasks.map((task, idx) => {
-                    let completeCount = 0;
-                    activeBusinessProfiles.forEach(bId => {
-                        if (appState.businesses[bId].completedTasks[`${appState.currentDay}-${idx}`]) completeCount++;
-                    });
-                    return `
-                        <div class="glass-card rounded-xl p-4 flex items-center justify-between border-l-2 border-l-indigo-500/40 opacity-70">
-                            <span class="text-sm font-medium text-slate-300 truncate mr-2">${task}</span>
-                            <span class="text-xs bg-indigo-950 text-indigo-300 font-bold px-2.5 py-1 rounded-md tracking-wider border border-indigo-800/40 shrink-0">
-                                ${completeCount}/${activeBusinessProfiles.length} DONE
-                            </span>
-                        </div>`;
-                }).join('');
+                dayContainer.innerHTML = `<div class="text-center py-12 glass-card rounded-2xl"><h4 class="text-slate-200 font-semibold">Weekly Cooldown Suspend</h4></div>`;
             } else {
-                // Focused interactive business workflow mode execution
-                const biz = appState.businesses[appState.selectedBusiness];
                 dayContainer.innerHTML = dayTasks.map((task, idx) => {
-                    const key = `${appState.currentDay}-${idx}`;
-                    const isChecked = !!biz.completedTasks[key];
-                    return `
-                        <div id="card-${key}" class="clickable-element glass-card rounded-xl p-4 flex items-center justify-between gap-4 cursor-pointer select-none ${isChecked ? 'opacity-30' : ''}" onclick="document.getElementById('chk-${key}').click()">
-                            <div class="flex items-center gap-3.5 min-w-0">
-                                <div class="relative flex items-center justify-center">
-                                    <input type="checkbox" id="chk-${key}" ${isChecked ? 'checked' : ''} 
-                                        onclick="event.stopPropagation(); toggleTaskCheck('${key}')"
-                                        class="peer w-5 h-5 rounded-md border border-slate-700 bg-slate-900/60 appearance-none checked:bg-indigo-500 checked:border-indigo-500 focus:outline-none transition-all cursor-pointer">
-                                    <i data-lucide="check" class="absolute w-3.5 h-3.5 text-white pointer-events-none hidden peer-checked:block"></i>
-                                </div>
-                                <span id="text-${key}" class="text-sm font-medium text-slate-200 truncate ${isChecked ? 'line-through text-slate-500' : ''}">${task}</span>
-                            </div>
-                            <div class="text-slate-600"><i data-lucide="chevron-right" class="w-4 h-4"></i></div>
-                        </div>`;
+                    return `<div class="glass-card rounded-xl p-4 flex justify-between items-center opacity-80 border-l-2 border-l-indigo-500/50"><span class="text-sm font-medium text-slate-200">${task}</span><div class="text-slate-500"><i data-lucide="arrow-right" class="w-4 h-4"></i></div></div>`;
                 }).join('');
             }
 
-            // Render Target 2: Daily Recurring Core Stream Columns
+            // Render Stream Component 2: Execution Roadmaps
+            const brandContainer = document.getElementById('brandTaskContainer');
+            
+            if (isAllMode) {
+                document.getElementById('brandTaskCount').innerText = "Select profile to track tasks";
+                brandContainer.innerHTML = `<div class="text-center py-12 glass-card rounded-2xl text-xs text-slate-500">Cross-business execution checklist loaded. Choose a specific brand column filter above to start checking off items.</div>`;
+            } else {
+                const activeBrandTasks = marketingSchema.brandTasks[appState.selectedBusiness] || [];
+                document.getElementById('brandTaskCount').innerText = `${activeBrandTasks.length} workflows`;
+                const biz = appState.businesses[appState.selectedBusiness];
+                
+                brandContainer.innerHTML = activeBrandTasks.map((task, idx) => {
+                    const key = `brand-${idx}`; const isChecked = !!biz.completedTasks[key];
+                    return `<div id="card-${key}" class="clickable-element glass-card rounded-xl p-4 flex items-center justify-between cursor-pointer select-none ${isChecked ? 'opacity-30' : ''}" onclick="document.getElementById('chk-${key}').click()"><div class="flex items-center gap-3.5 min-w-0"><input type="checkbox" id="chk-${key}" ${isChecked ? 'checked' : ''} onclick="event.stopPropagation(); toggleTaskCheck('${key}')" class="peer w-5 h-5 rounded-md border border-slate-700 bg-slate-900/60 appearance-none checked:bg-purple-500 cursor-pointer"><span id="text-${key}" class="text-sm font-medium text-slate-200 truncate ${isChecked ? 'line-through text-slate-500' : ''}">${task}</span></div><div class="text-slate-600"><i data-lucide="chevron-right" class="w-4 h-4"></i></div></div>`;
+                }).join('');
+            }
+
+            // Render Stream Component 3: Core Recurring Department Tasks
             const recContainer = document.getElementById('recurringTaskContainer');
-            document.getElementById('recurringTaskCount').innerText = `${marketingSchema.recurring.length} tasks per profile`;
+            document.getElementById('recurringTaskCount').innerText = `${marketingSchema.recurring.length} checks`;
             
             if (isAllMode) {
                 recContainer.innerHTML = marketingSchema.recurring.map((task, idx) => {
-                    let completeCount = 0;
-                    activeBusinessProfiles.forEach(bId => {
-                        if (appState.businesses[bId].completedTasks[`rec-${idx}`]) completeCount++;
-                    });
-                    return `
-                        <div class="glass-card rounded-xl p-3.5 flex items-center justify-between text-xs opacity-70">
-                            <span class="text-slate-300 truncate mr-2">${task}</span>
-                            <span class="bg-emerald-950/50 text-emerald-400 font-mono text-[10px] px-2 py-0.5 rounded border border-emerald-800/30 shrink-0 font-bold">${completeCount}/${activeBusinessProfiles.length}</span>
-                        </div>`;
+                    let closed = 0; activeBusinessProfiles.forEach(bId => { if (appState.businesses[bId].completedTasks[`rec-${idx}`]) closed++; });
+                    return `<div class="glass-card rounded-xl p-3.5 flex justify-between text-xs opacity-70"><span class="text-slate-300 truncate">${task}</span><span class="bg-emerald-950 text-emerald-400 text-[10px] px-2 py-0.5 rounded border border-emerald-800/30 font-bold">${closed}/${activeBusinessProfiles.length} DONE</span></div>`;
                 }).join('');
             } else {
                 const biz = appState.businesses[appState.selectedBusiness];
                 recContainer.innerHTML = marketingSchema.recurring.map((task, idx) => {
-                    const key = `rec-${idx}`;
-                    const isChecked = !!biz.completedTasks[key];
-                    return `
-                        <div id="card-${key}" class="clickable-element glass-card rounded-xl p-3.5 flex items-center justify-between gap-4 cursor-pointer select-none ${isChecked ? 'opacity-30' : ''}" onclick="document.getElementById('chk-${key}').click()">
-                            <div class="flex items-center gap-3 min-w-0">
-                                <div class="relative flex items-center justify-center">
-                                    <input type="checkbox" id="chk-${key}" ${isChecked ? 'checked' : ''} 
-                                        onclick="event.stopPropagation(); toggleTaskCheck('${key}')"
-                                        class="peer w-4.5 h-4.5 rounded-md border border-slate-700 bg-slate-900/60 appearance-none checked:bg-emerald-500 checked:border-emerald-500 focus:outline-none transition-all cursor-pointer">
-                                    <i data-lucide="check" class="absolute w-3 h-3 text-white pointer-events-none hidden peer-checked:block"></i>
-                                </div>
-                                <span id="text-${key}" class="text-xs font-medium text-slate-300 truncate ${isChecked ? 'line-through text-slate-600' : ''}">${task}</span>
-                            </div>
-                        </div>`;
+                    const key = `rec-${idx}`; const isChecked = !!biz.completedTasks[key];
+                    return `<div id="card-${key}" class="clickable-element glass-card rounded-xl p-3.5 flex items-center justify-between cursor-pointer select-none ${isChecked ? 'opacity-30' : ''}" onclick="document.getElementById('chk-${key}').click()"><div class="flex items-center gap-3 min-w-0"><input type="checkbox" id="chk-${key}" ${isChecked ? 'checked' : ''} onclick="event.stopPropagation(); toggleTaskCheck('${key}')" class="w-4.5 h-4.5 rounded-md border border-slate-700 bg-slate-900/60 appearance-none checked:bg-emerald-500 cursor-pointer"><span id="text-${key}" class="text-xs font-medium text-slate-300 truncate ${isChecked ? 'line-through text-slate-600' : ''}">${task}</span></div></div>`;
                 }).join('');
             }
 
-            // Render Target 3: Counter Core Engine Layout Module (Weekly Strategic Metrics)
+            // Render Stream Component 4: Dynamic Metrics Framework
             const weeklyContainer = document.getElementById('weeklyTaskContainer');
-            
             if (isAllMode) {
-                weeklyContainer.innerHTML = marketingSchema.weeklyGrowth.map(item => {
-                    let aggregatedProgress = 0;
-                    let maxTargetAggregated = item.target * activeBusinessProfiles.length;
-                    activeBusinessProfiles.forEach(bId => { aggregatedProgress += (appState.businesses[bId].weeklyCounters[item.id] || 0); });
-                    const pct = (aggregatedProgress / maxTargetAggregated) * 100;
-                    
-                    return `
-                        <div class="glass-card rounded-xl p-4 space-y-2.5 opacity-80">
-                            <div class="flex justify-between items-start gap-2">
-                                <span class="text-xs font-medium text-slate-300 leading-tight">${item.text}</span>
-                                <span class="text-xs font-bold font-mono text-indigo-400">${aggregatedProgress}/${maxTargetAggregated}</span>
-                            </div>
-                            <div class="w-full bg-slate-950 h-1 rounded-full overflow-hidden border border-slate-800/40">
-                                <div style="width: ${pct}%" class="h-full rounded-full bg-indigo-500"></div>
-                            </div>
-                        </div>`;
-                }).join('');
+                let metrics = {}; activeBusinessProfiles.forEach(bId => { marketingSchema.weeklyGrowth[bId].forEach(item => { if(!metrics[item.text]) metrics[item.text] = { c: 0, t: 0 }; metrics[item.text].t += item.target; metrics[item.text].c += (appState.businesses[bId].weeklyCounters[item.id] || 0); }); });
+                weeklyContainer.innerHTML = Object.keys(metrics).map(k => `<div class="glass-card rounded-xl p-4 space-y-2.5 opacity-80"><div class="flex justify-between text-xs font-medium text-slate-300"><span>${k}</span><span class="font-bold text-indigo-400">${metrics[k].c}/${metrics[k].t}</span></div><div class="w-full bg-slate-950 h-1 rounded-full"><div style="width: ${(metrics[k].c/metrics[k].t)*100}%" class="h-full bg-indigo-500"></div></div></div>`).join('');
             } else {
-                const biz = appState.businesses[appState.selectedBusiness];
-                weeklyContainer.innerHTML = marketingSchema.weeklyGrowth.map(item => {
-                    const current = biz.weeklyCounters[item.id] || 0;
-                    const pct = (current / item.target) * 100;
-                    const isDone = current === item.target;
-                    return `
-                        <div id="wcard-${item.id}" class="glass-card rounded-xl p-4 space-y-2.5 ${isDone ? 'opacity-40' : ''}">
-                            <div class="flex justify-between items-start gap-2">
-                                <span class="text-xs font-medium text-slate-200 leading-tight">${item.text}</span>
-                                <span id="count-${item.id}" class="text-xs font-bold tabular-nums font-mono ${isDone ? 'text-emerald-400' : 'text-amber-400'}">${current}/${item.target}</span>
-                            </div>
-                            <div class="flex items-center gap-3">
-                                <div class="w-full bg-slate-950 h-1.5 rounded-full overflow-hidden p-[1px] border border-slate-800/60">
-                                    <div id="fill-${item.id}" style="width: ${pct}%" class="h-full rounded-full transition-all duration-300 ${isDone ? 'bg-emerald-500' : 'bg-amber-500'}"></div>
-                                </div>
-                                <div class="flex items-center gap-1 shrink-0">
-                                    <button onclick="modifyCounter('${item.id}', -1, ${item.target})" class="clickable-element w-6 h-6 rounded bg-slate-800 hover:bg-slate-700 text-slate-400 flex items-center justify-center border border-slate-700/50">
-                                        <i data-lucide="minus" class="w-3 h-3"></i>
-                                    </button>
-                                    <button onclick="modifyCounter('${item.id}', 1, ${item.target})" class="clickable-element w-6 h-6 rounded bg-indigo-600 hover:bg-indigo-500 text-white flex items-center justify-center">
-                                        <i data-lucide="plus" class="w-3 h-3"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>`;
+                const bId = appState.selectedBusiness; const biz = appState.businesses[bId];
+                weeklyContainer.innerHTML = marketingSchema.weeklyGrowth[bId].map(item => {
+                    const current = biz.weeklyCounters[item.id] || 0; const isDone = current === item.target;
+                    return `<div id="wcard-${item.id}" class="glass-card rounded-xl p-4 space-y-2.5 ${isDone ? 'opacity-40' : ''}"><div class="flex justify-between items-start"><span class="text-xs font-medium text-slate-200">${item.text}</span><span id="count-${item.id}" class="text-xs font-bold font-mono ${isDone ? 'text-emerald-400' : 'text-amber-400'}">${current}/${item.target}</span></div><div class="flex items-center gap-3"><div class="w-full bg-slate-950 h-1.5 rounded-full"><div id="fill-${item.id}" style="width: ${(current/item.target)*100}%" class="h-full rounded-full ${isDone ? 'bg-emerald-500' : 'bg-amber-500'}"></div></div><div class="flex gap-1"><button onclick="modifyCounter('${bId}', '${item.id}', -1, ${item.target})" class="w-6 h-6 rounded bg-slate-800 text-slate-400 flex items-center justify-center border border-slate-700/50 text-xs font-bold">-</button><button onclick="modifyCounter('${bId}', '${item.id}', 1, ${item.target})" class="w-6 h-6 rounded bg-indigo-600 text-white flex items-center justify-center text-xs font-bold">+</button></div></div></div>`;
                 }).join('');
             }
-
-            // Parse Lucide Engine icons cleanly across dynamically generated layouts
             lucide.createIcons();
             calculateOperationalMetrics();
         }
